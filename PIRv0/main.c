@@ -30,16 +30,16 @@
 
 
 //Switch soldering definition
-#define SW0B   PIN0  /*POSITION 1 - 1 minutes;  SW0 <-> SWCOM */
-#define SW1B   PIN1  /*POSITION 2 - 5 minutes;  SW1 <-> SWCOM */
-#define SW2A   PIN7  /*POSITION 3 - 30 minutes; SW2 <-> SWCOM */
-#define SW3A   PIN0  /*POSITION 4 - 60 minutes; SW3 <-> SWCOM */
-#define SW4A   PIN1 /*NOT USED in current project*/
-#define light  PINA3
+#define SW0B   PINB0  /*POSITION 1 - 1 minutes;  SW0 <-> SWCOM */
+#define SW1B   PINB1  /*POSITION 2 - 5 minutes;  SW1 <-> SWCOM */
+#define SW2A   PINA7  /*POSITION 3 - 30 minutes; SW2 <-> SWCOM */
+#define SW3A   PINA0  /*POSITION 4 - 60 minutes; SW3 <-> SWCOM */
+#define SW4A   PINA1 /*NOT USED in current project*/
+#define light  PORTA3
 #define comp_in PINA2   
 
+//#define one_minute_const 3000  // one tick is equal of 20 ms 
 #define one_minute_const 3000  // one tick is equal of 20 ms 
-
 //************************************************
 // Global variable structure
 //************************************************
@@ -72,6 +72,7 @@ void PCIntIRQInt(void);
 
 
 ISR(PCINT0_vect){
+	cli();
 		Sleep_off();
 		if (gvar.light_enable == 1) {
 			
@@ -88,7 +89,7 @@ ISR(PCINT0_vect){
 					
 					}
 				
-				_delay_us(300);
+				_delay_us(250);
 				SET_BIT(PORTA,light);
 				_delay_us(700);
 				CLEAR_BIT(PORTA, light);
@@ -102,6 +103,7 @@ ISR(PCINT0_vect){
 			}
 			Sleep_on();
 		}
+		sei();
 }
 
 // if pir detected any movement
@@ -115,7 +117,6 @@ ISR(PCINT1_vect){
 }
 
 
-
 //************************************************
 // MAIN SOFTWARE PART
 //************************************************
@@ -127,7 +128,9 @@ int main(void)
 	sei();
 	SleepInt();
 	
-	
+	gvar.light_enable = 0;
+	gvar.one_min_counter = one_minute_const;
+	gvar.min_counter = 1; 
 	
 	Sleep_on();
     /* Replace with your application code */

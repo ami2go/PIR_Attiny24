@@ -3,27 +3,27 @@ PIRv0.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000286  00000000  00000000  00000074  2**1
+  0 .text         000002a0  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .bss          00000004  00800060  00800060  000002fa  2**0
+  1 .bss          00000004  00800060  00800060  00000314  2**0
                   ALLOC
-  2 .debug_aranges 00000060  00000000  00000000  000002fa  2**0
+  2 .debug_aranges 00000060  00000000  00000000  00000314  2**0
                   CONTENTS, READONLY, DEBUGGING
-  3 .debug_pubnames 00000099  00000000  00000000  0000035a  2**0
+  3 .debug_pubnames 00000099  00000000  00000000  00000374  2**0
                   CONTENTS, READONLY, DEBUGGING
-  4 .debug_info   00000396  00000000  00000000  000003f3  2**0
+  4 .debug_info   00000396  00000000  00000000  0000040d  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_abbrev 0000015d  00000000  00000000  00000789  2**0
+  5 .debug_abbrev 0000015d  00000000  00000000  000007a3  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_line   000003bb  00000000  00000000  000008e6  2**0
+  6 .debug_line   000003e3  00000000  00000000  00000900  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_frame  000000a0  00000000  00000000  00000ca4  2**2
+  7 .debug_frame  000000a0  00000000  00000000  00000ce4  2**2
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_str    00000165  00000000  00000000  00000d44  2**0
+  8 .debug_str    00000165  00000000  00000000  00000d84  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_loc    0000007d  00000000  00000000  00000ea9  2**0
+  9 .debug_loc    0000007d  00000000  00000000  00000ee9  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_ranges 00000058  00000000  00000000  00000f26  2**0
+ 10 .debug_ranges 00000058  00000000  00000000  00000f66  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -32,7 +32,7 @@ Disassembly of section .text:
    0:	10 c0       	rjmp	.+32     	; 0x22 <__ctors_end>
    2:	1d c0       	rjmp	.+58     	; 0x3e <__bad_interrupt>
    4:	58 c0       	rjmp	.+176    	; 0xb6 <__vector_2>
-   6:	ea c0       	rjmp	.+468    	; 0x1dc <__vector_3>
+   6:	ec c0       	rjmp	.+472    	; 0x1e0 <__vector_3>
    8:	1a c0       	rjmp	.+52     	; 0x3e <__bad_interrupt>
    a:	19 c0       	rjmp	.+50     	; 0x3e <__bad_interrupt>
    c:	18 c0       	rjmp	.+48     	; 0x3e <__bad_interrupt>
@@ -66,8 +66,8 @@ Disassembly of section .text:
   34:	a4 36       	cpi	r26, 0x64	; 100
   36:	b1 07       	cpc	r27, r17
   38:	e1 f7       	brne	.-8      	; 0x32 <.do_clear_bss_loop>
-  3a:	1d d1       	rcall	.+570    	; 0x276 <main>
-  3c:	22 c1       	rjmp	.+580    	; 0x282 <_exit>
+  3a:	1f d1       	rcall	.+574    	; 0x27a <main>
+  3c:	2f c1       	rjmp	.+606    	; 0x29c <_exit>
 
 0000003e <__bad_interrupt>:
   3e:	e0 cf       	rjmp	.-64     	; 0x0 <__vectors>
@@ -204,328 +204,345 @@ ISR(PCINT0_vect){
   d2:	bf 93       	push	r27
   d4:	ef 93       	push	r30
   d6:	ff 93       	push	r31
+	cli();
+  d8:	f8 94       	cli
 		Sleep_off();
-  d8:	e8 df       	rcall	.-48     	; 0xaa <Sleep_off>
+  da:	e7 df       	rcall	.-50     	; 0xaa <Sleep_off>
 		if (gvar.light_enable == 1) {
-  da:	80 91 60 00 	lds	r24, 0x0060
-  de:	81 30       	cpi	r24, 0x01	; 1
-  e0:	a9 f5       	brne	.+106    	; 0x14c <__stack+0x6d>
+  dc:	80 91 60 00 	lds	r24, 0x0060
+  e0:	81 30       	cpi	r24, 0x01	; 1
+  e2:	a9 f5       	brne	.+106    	; 0x14e <__stack+0x6f>
 			
 			if(bit_is_clear(PINA, comp_in)){
-  e2:	ca 99       	sbic	0x19, 2	; 25
-  e4:	27 c0       	rjmp	.+78     	; 0x134 <__stack+0x55>
+  e4:	ca 99       	sbic	0x19, 2	; 25
+  e6:	27 c0       	rjmp	.+78     	; 0x136 <__stack+0x57>
 				
 				gvar.one_min_counter--;
-  e6:	e1 e6       	ldi	r30, 0x61	; 97
-  e8:	f0 e0       	ldi	r31, 0x00	; 0
-  ea:	80 81       	ld	r24, Z
-  ec:	91 81       	ldd	r25, Z+1	; 0x01
-  ee:	01 97       	sbiw	r24, 0x01	; 1
-  f0:	91 83       	std	Z+1, r25	; 0x01
-  f2:	80 83       	st	Z, r24
+  e8:	e1 e6       	ldi	r30, 0x61	; 97
+  ea:	f0 e0       	ldi	r31, 0x00	; 0
+  ec:	80 81       	ld	r24, Z
+  ee:	91 81       	ldd	r25, Z+1	; 0x01
+  f0:	01 97       	sbiw	r24, 0x01	; 1
+  f2:	91 83       	std	Z+1, r25	; 0x01
+  f4:	80 83       	st	Z, r24
 				
 				if(gvar.one_min_counter == 0){
-  f4:	80 81       	ld	r24, Z
-  f6:	91 81       	ldd	r25, Z+1	; 0x01
-  f8:	89 2b       	or	r24, r25
-  fa:	69 f4       	brne	.+26     	; 0x116 <__stack+0x37>
+  f6:	80 81       	ld	r24, Z
+  f8:	91 81       	ldd	r25, Z+1	; 0x01
+  fa:	89 2b       	or	r24, r25
+  fc:	69 f4       	brne	.+26     	; 0x118 <__stack+0x39>
 					
 					gvar.one_min_counter = one_minute_const;
-  fc:	88 eb       	ldi	r24, 0xB8	; 184
-  fe:	9b e0       	ldi	r25, 0x0B	; 11
- 100:	91 83       	std	Z+1, r25	; 0x01
- 102:	80 83       	st	Z, r24
- 104:	32 96       	adiw	r30, 0x02	; 2
+  fe:	88 eb       	ldi	r24, 0xB8	; 184
+ 100:	9b e0       	ldi	r25, 0x0B	; 11
+ 102:	91 83       	std	Z+1, r25	; 0x01
+ 104:	80 83       	st	Z, r24
+ 106:	32 96       	adiw	r30, 0x02	; 2
 					gvar.min_counter--;
- 106:	80 81       	ld	r24, Z
- 108:	81 50       	subi	r24, 0x01	; 1
- 10a:	80 83       	st	Z, r24
+ 108:	80 81       	ld	r24, Z
+ 10a:	81 50       	subi	r24, 0x01	; 1
+ 10c:	80 83       	st	Z, r24
 					
 					if (gvar.min_counter == 0) gvar.light_enable = 0;
- 10c:	80 81       	ld	r24, Z
- 10e:	88 23       	and	r24, r24
- 110:	11 f4       	brne	.+4      	; 0x116 <__stack+0x37>
- 112:	10 92 60 00 	sts	0x0060, r1
- 116:	84 e6       	ldi	r24, 0x64	; 100
- 118:	8a 95       	dec	r24
- 11a:	f1 f7       	brne	.-4      	; 0x118 <__stack+0x39>
+ 10e:	80 81       	ld	r24, Z
+ 110:	88 23       	and	r24, r24
+ 112:	11 f4       	brne	.+4      	; 0x118 <__stack+0x39>
+ 114:	10 92 60 00 	sts	0x0060, r1
+ 118:	83 e5       	ldi	r24, 0x53	; 83
+ 11a:	8a 95       	dec	r24
+ 11c:	f1 f7       	brne	.-4      	; 0x11a <__stack+0x3b>
 					
 					}
 				
-				_delay_us(300);
+				_delay_us(250);
 				SET_BIT(PORTA,light);
- 11c:	eb e3       	ldi	r30, 0x3B	; 59
- 11e:	f0 e0       	ldi	r31, 0x00	; 0
- 120:	80 81       	ld	r24, Z
- 122:	88 60       	ori	r24, 0x08	; 8
- 124:	80 83       	st	Z, r24
- 126:	89 ee       	ldi	r24, 0xE9	; 233
- 128:	8a 95       	dec	r24
- 12a:	f1 f7       	brne	.-4      	; 0x128 <__stack+0x49>
+ 11e:	eb e3       	ldi	r30, 0x3B	; 59
+ 120:	f0 e0       	ldi	r31, 0x00	; 0
+ 122:	80 81       	ld	r24, Z
+ 124:	88 60       	ori	r24, 0x08	; 8
+ 126:	80 83       	st	Z, r24
+ 128:	89 ee       	ldi	r24, 0xE9	; 233
+ 12a:	8a 95       	dec	r24
+ 12c:	f1 f7       	brne	.-4      	; 0x12a <__stack+0x4b>
 				_delay_us(700);
 				CLEAR_BIT(PORTA, light);
- 12c:	80 81       	ld	r24, Z
- 12e:	87 7f       	andi	r24, 0xF7	; 247
- 130:	80 83       	st	Z, r24
- 132:	0b c0       	rjmp	.+22     	; 0x14a <__stack+0x6b>
+ 12e:	80 81       	ld	r24, Z
+ 130:	87 7f       	andi	r24, 0xF7	; 247
+ 132:	80 83       	st	Z, r24
+ 134:	0b c0       	rjmp	.+22     	; 0x14c <__stack+0x6d>
 			}
 			
 			else {
 				
 				SET_BIT(PORTA,light);
- 134:	eb e3       	ldi	r30, 0x3B	; 59
- 136:	f0 e0       	ldi	r31, 0x00	; 0
- 138:	80 81       	ld	r24, Z
- 13a:	88 60       	ori	r24, 0x08	; 8
- 13c:	80 83       	st	Z, r24
- 13e:	89 ee       	ldi	r24, 0xE9	; 233
- 140:	8a 95       	dec	r24
- 142:	f1 f7       	brne	.-4      	; 0x140 <__stack+0x61>
+ 136:	eb e3       	ldi	r30, 0x3B	; 59
+ 138:	f0 e0       	ldi	r31, 0x00	; 0
+ 13a:	80 81       	ld	r24, Z
+ 13c:	88 60       	ori	r24, 0x08	; 8
+ 13e:	80 83       	st	Z, r24
+ 140:	89 ee       	ldi	r24, 0xE9	; 233
+ 142:	8a 95       	dec	r24
+ 144:	f1 f7       	brne	.-4      	; 0x142 <__stack+0x63>
 				_delay_us(700);
 				CLEAR_BIT(PORTA, light);
- 144:	80 81       	ld	r24, Z
- 146:	87 7f       	andi	r24, 0xF7	; 247
- 148:	80 83       	st	Z, r24
+ 146:	80 81       	ld	r24, Z
+ 148:	87 7f       	andi	r24, 0xF7	; 247
+ 14a:	80 83       	st	Z, r24
 			}
 			Sleep_on();
- 14a:	a9 df       	rcall	.-174    	; 0x9e <Sleep_on>
+ 14c:	a8 df       	rcall	.-176    	; 0x9e <Sleep_on>
 		}
+		sei();
+ 14e:	78 94       	sei
 }
- 14c:	ff 91       	pop	r31
- 14e:	ef 91       	pop	r30
- 150:	bf 91       	pop	r27
- 152:	af 91       	pop	r26
- 154:	9f 91       	pop	r25
- 156:	8f 91       	pop	r24
- 158:	7f 91       	pop	r23
- 15a:	6f 91       	pop	r22
- 15c:	5f 91       	pop	r21
- 15e:	4f 91       	pop	r20
- 160:	3f 91       	pop	r19
- 162:	2f 91       	pop	r18
- 164:	0f 90       	pop	r0
- 166:	0f be       	out	0x3f, r0	; 63
+ 150:	ff 91       	pop	r31
+ 152:	ef 91       	pop	r30
+ 154:	bf 91       	pop	r27
+ 156:	af 91       	pop	r26
+ 158:	9f 91       	pop	r25
+ 15a:	8f 91       	pop	r24
+ 15c:	7f 91       	pop	r23
+ 15e:	6f 91       	pop	r22
+ 160:	5f 91       	pop	r21
+ 162:	4f 91       	pop	r20
+ 164:	3f 91       	pop	r19
+ 166:	2f 91       	pop	r18
  168:	0f 90       	pop	r0
- 16a:	1f 90       	pop	r1
- 16c:	18 95       	reti
+ 16a:	0f be       	out	0x3f, r0	; 63
+ 16c:	0f 90       	pop	r0
+ 16e:	1f 90       	pop	r1
+ 170:	18 95       	reti
 
-0000016e <time_selection>:
+00000172 <time_selection>:
 	
 	uint8_t time = 0;
 	
 	
 	//Turn on internal pull-up resistors
 	SET_BIT(PORTA,SW2A);
- 16e:	eb e3       	ldi	r30, 0x3B	; 59
- 170:	f0 e0       	ldi	r31, 0x00	; 0
- 172:	80 81       	ld	r24, Z
- 174:	80 68       	ori	r24, 0x80	; 128
- 176:	80 83       	st	Z, r24
+ 172:	eb e3       	ldi	r30, 0x3B	; 59
+ 174:	f0 e0       	ldi	r31, 0x00	; 0
+ 176:	80 81       	ld	r24, Z
+ 178:	80 68       	ori	r24, 0x80	; 128
+ 17a:	80 83       	st	Z, r24
 	SET_BIT(PORTA,SW3A);
- 178:	80 81       	ld	r24, Z
- 17a:	81 60       	ori	r24, 0x01	; 1
- 17c:	80 83       	st	Z, r24
+ 17c:	80 81       	ld	r24, Z
+ 17e:	81 60       	ori	r24, 0x01	; 1
+ 180:	80 83       	st	Z, r24
 	SET_BIT(PORTB,SW0B);
- 17e:	e8 e3       	ldi	r30, 0x38	; 56
- 180:	f0 e0       	ldi	r31, 0x00	; 0
- 182:	80 81       	ld	r24, Z
- 184:	81 60       	ori	r24, 0x01	; 1
- 186:	80 83       	st	Z, r24
+ 182:	e8 e3       	ldi	r30, 0x38	; 56
+ 184:	f0 e0       	ldi	r31, 0x00	; 0
+ 186:	80 81       	ld	r24, Z
+ 188:	81 60       	ori	r24, 0x01	; 1
+ 18a:	80 83       	st	Z, r24
 	SET_BIT(PORTB,SW1B); 
- 188:	80 81       	ld	r24, Z
- 18a:	82 60       	ori	r24, 0x02	; 2
- 18c:	80 83       	st	Z, r24
- 18e:	86 ea       	ldi	r24, 0xA6	; 166
- 190:	8a 95       	dec	r24
- 192:	f1 f7       	brne	.-4      	; 0x190 <time_selection+0x22>
+ 18c:	80 81       	ld	r24, Z
+ 18e:	82 60       	ori	r24, 0x02	; 2
+ 190:	80 83       	st	Z, r24
+ 192:	86 ea       	ldi	r24, 0xA6	; 166
+ 194:	8a 95       	dec	r24
+ 196:	f1 f7       	brne	.-4      	; 0x194 <time_selection+0x22>
 		
 	_delay_us(500);
 	
 	//Reading switch
 	if(bit_is_clear(PINB, SW0B))  time = 1;
- 194:	e6 e3       	ldi	r30, 0x36	; 54
- 196:	f0 e0       	ldi	r31, 0x00	; 0
- 198:	90 81       	ld	r25, Z
+ 198:	e6 e3       	ldi	r30, 0x36	; 54
+ 19a:	f0 e0       	ldi	r31, 0x00	; 0
+ 19c:	90 81       	ld	r25, Z
 	if(bit_is_clear(PINB, SW1B))  time = 5;
- 19a:	80 81       	ld	r24, Z
- 19c:	81 fd       	sbrc	r24, 1
- 19e:	02 c0       	rjmp	.+4      	; 0x1a4 <time_selection+0x36>
- 1a0:	95 e0       	ldi	r25, 0x05	; 5
- 1a2:	04 c0       	rjmp	.+8      	; 0x1ac <time_selection+0x3e>
- 1a4:	89 2f       	mov	r24, r25
- 1a6:	80 95       	com	r24
- 1a8:	98 2f       	mov	r25, r24
- 1aa:	91 70       	andi	r25, 0x01	; 1
+ 19e:	80 81       	ld	r24, Z
+ 1a0:	81 fd       	sbrc	r24, 1
+ 1a2:	02 c0       	rjmp	.+4      	; 0x1a8 <time_selection+0x36>
+ 1a4:	95 e0       	ldi	r25, 0x05	; 5
+ 1a6:	04 c0       	rjmp	.+8      	; 0x1b0 <time_selection+0x3e>
+ 1a8:	89 2f       	mov	r24, r25
+ 1aa:	80 95       	com	r24
+ 1ac:	98 2f       	mov	r25, r24
+ 1ae:	91 70       	andi	r25, 0x01	; 1
 	if(bit_is_clear(PINA, SW2A))  time = 30;
- 1ac:	89 b3       	in	r24, 0x19	; 25
- 1ae:	88 23       	and	r24, r24
- 1b0:	0c f0       	brlt	.+2      	; 0x1b4 <time_selection+0x46>
- 1b2:	9e e1       	ldi	r25, 0x1E	; 30
+ 1b0:	89 b3       	in	r24, 0x19	; 25
+ 1b2:	88 23       	and	r24, r24
+ 1b4:	0c f0       	brlt	.+2      	; 0x1b8 <time_selection+0x46>
+ 1b6:	9e e1       	ldi	r25, 0x1E	; 30
 	if(bit_is_clear(PINA, SW3A))  time = 60;
- 1b4:	c8 9b       	sbis	0x19, 0	; 25
- 1b6:	9c e3       	ldi	r25, 0x3C	; 60
+ 1b8:	c8 9b       	sbis	0x19, 0	; 25
+ 1ba:	9c e3       	ldi	r25, 0x3C	; 60
 	
 	//Turn on internal pull-up resistors
 	CLEAR_BIT(PORTA,SW2A);
- 1b8:	eb e3       	ldi	r30, 0x3B	; 59
- 1ba:	f0 e0       	ldi	r31, 0x00	; 0
- 1bc:	80 81       	ld	r24, Z
- 1be:	8f 77       	andi	r24, 0x7F	; 127
- 1c0:	80 83       	st	Z, r24
+ 1bc:	eb e3       	ldi	r30, 0x3B	; 59
+ 1be:	f0 e0       	ldi	r31, 0x00	; 0
+ 1c0:	80 81       	ld	r24, Z
+ 1c2:	8f 77       	andi	r24, 0x7F	; 127
+ 1c4:	80 83       	st	Z, r24
 	CLEAR_BIT(PORTA,SW3A);
- 1c2:	80 81       	ld	r24, Z
- 1c4:	8e 7f       	andi	r24, 0xFE	; 254
- 1c6:	80 83       	st	Z, r24
+ 1c6:	80 81       	ld	r24, Z
+ 1c8:	8e 7f       	andi	r24, 0xFE	; 254
+ 1ca:	80 83       	st	Z, r24
 	CLEAR_BIT(PORTB,SW0B);
- 1c8:	e8 e3       	ldi	r30, 0x38	; 56
- 1ca:	f0 e0       	ldi	r31, 0x00	; 0
- 1cc:	80 81       	ld	r24, Z
- 1ce:	8e 7f       	andi	r24, 0xFE	; 254
- 1d0:	80 83       	st	Z, r24
+ 1cc:	e8 e3       	ldi	r30, 0x38	; 56
+ 1ce:	f0 e0       	ldi	r31, 0x00	; 0
+ 1d0:	80 81       	ld	r24, Z
+ 1d2:	8e 7f       	andi	r24, 0xFE	; 254
+ 1d4:	80 83       	st	Z, r24
 	CLEAR_BIT(PORTB,SW1B);
- 1d2:	80 81       	ld	r24, Z
- 1d4:	8d 7f       	andi	r24, 0xFD	; 253
- 1d6:	80 83       	st	Z, r24
+ 1d6:	80 81       	ld	r24, Z
+ 1d8:	8d 7f       	andi	r24, 0xFD	; 253
+ 1da:	80 83       	st	Z, r24
 
 	return time;
 	
 }
- 1d8:	89 2f       	mov	r24, r25
- 1da:	08 95       	ret
+ 1dc:	89 2f       	mov	r24, r25
+ 1de:	08 95       	ret
 
-000001dc <__vector_3>:
-			Sleep_on();
+000001e0 <__vector_3>:
 		}
+		sei();
 }
 
 // if pir detected any movement
 ISR(PCINT1_vect){
- 1dc:	1f 92       	push	r1
- 1de:	0f 92       	push	r0
- 1e0:	0f b6       	in	r0, 0x3f	; 63
+ 1e0:	1f 92       	push	r1
  1e2:	0f 92       	push	r0
- 1e4:	11 24       	eor	r1, r1
- 1e6:	0f 93       	push	r16
- 1e8:	1f 93       	push	r17
- 1ea:	2f 93       	push	r18
- 1ec:	3f 93       	push	r19
- 1ee:	4f 93       	push	r20
- 1f0:	5f 93       	push	r21
- 1f2:	6f 93       	push	r22
- 1f4:	7f 93       	push	r23
- 1f6:	8f 93       	push	r24
- 1f8:	9f 93       	push	r25
- 1fa:	af 93       	push	r26
- 1fc:	bf 93       	push	r27
- 1fe:	ef 93       	push	r30
- 200:	ff 93       	push	r31
+ 1e4:	0f b6       	in	r0, 0x3f	; 63
+ 1e6:	0f 92       	push	r0
+ 1e8:	11 24       	eor	r1, r1
+ 1ea:	0f 93       	push	r16
+ 1ec:	1f 93       	push	r17
+ 1ee:	2f 93       	push	r18
+ 1f0:	3f 93       	push	r19
+ 1f2:	4f 93       	push	r20
+ 1f4:	5f 93       	push	r21
+ 1f6:	6f 93       	push	r22
+ 1f8:	7f 93       	push	r23
+ 1fa:	8f 93       	push	r24
+ 1fc:	9f 93       	push	r25
+ 1fe:	af 93       	push	r26
+ 200:	bf 93       	push	r27
+ 202:	ef 93       	push	r30
+ 204:	ff 93       	push	r31
 	
 	Sleep_off();
- 202:	53 df       	rcall	.-346    	; 0xaa <Sleep_off>
+ 206:	51 df       	rcall	.-350    	; 0xaa <Sleep_off>
 	gvar.light_enable = 1;
- 204:	00 e6       	ldi	r16, 0x60	; 96
- 206:	10 e0       	ldi	r17, 0x00	; 0
- 208:	81 e0       	ldi	r24, 0x01	; 1
- 20a:	f8 01       	movw	r30, r16
- 20c:	80 83       	st	Z, r24
+ 208:	00 e6       	ldi	r16, 0x60	; 96
+ 20a:	10 e0       	ldi	r17, 0x00	; 0
+ 20c:	81 e0       	ldi	r24, 0x01	; 1
+ 20e:	f8 01       	movw	r30, r16
+ 210:	80 83       	st	Z, r24
 	gvar.min_counter = time_selection();
- 20e:	af df       	rcall	.-162    	; 0x16e <time_selection>
- 210:	0d 5f       	subi	r16, 0xFD	; 253
- 212:	1f 4f       	sbci	r17, 0xFF	; 255
- 214:	f8 01       	movw	r30, r16
- 216:	80 83       	st	Z, r24
+ 212:	af df       	rcall	.-162    	; 0x172 <time_selection>
+ 214:	0d 5f       	subi	r16, 0xFD	; 253
+ 216:	1f 4f       	sbci	r17, 0xFF	; 255
+ 218:	f8 01       	movw	r30, r16
+ 21a:	80 83       	st	Z, r24
 	Sleep_on();
- 218:	42 df       	rcall	.-380    	; 0x9e <Sleep_on>
+ 21c:	40 df       	rcall	.-384    	; 0x9e <Sleep_on>
 	
 }
- 21a:	ff 91       	pop	r31
- 21c:	ef 91       	pop	r30
- 21e:	bf 91       	pop	r27
- 220:	af 91       	pop	r26
- 222:	9f 91       	pop	r25
- 224:	8f 91       	pop	r24
- 226:	7f 91       	pop	r23
- 228:	6f 91       	pop	r22
- 22a:	5f 91       	pop	r21
- 22c:	4f 91       	pop	r20
- 22e:	3f 91       	pop	r19
- 230:	2f 91       	pop	r18
- 232:	1f 91       	pop	r17
- 234:	0f 91       	pop	r16
- 236:	0f 90       	pop	r0
- 238:	0f be       	out	0x3f, r0	; 63
+ 21e:	ff 91       	pop	r31
+ 220:	ef 91       	pop	r30
+ 222:	bf 91       	pop	r27
+ 224:	af 91       	pop	r26
+ 226:	9f 91       	pop	r25
+ 228:	8f 91       	pop	r24
+ 22a:	7f 91       	pop	r23
+ 22c:	6f 91       	pop	r22
+ 22e:	5f 91       	pop	r21
+ 230:	4f 91       	pop	r20
+ 232:	3f 91       	pop	r19
+ 234:	2f 91       	pop	r18
+ 236:	1f 91       	pop	r17
+ 238:	0f 91       	pop	r16
  23a:	0f 90       	pop	r0
- 23c:	1f 90       	pop	r1
- 23e:	18 95       	reti
+ 23c:	0f be       	out	0x3f, r0	; 63
+ 23e:	0f 90       	pop	r0
+ 240:	1f 90       	pop	r1
+ 242:	18 95       	reti
 
-00000240 <PCIntIRQInt>:
+00000244 <PCIntIRQInt>:
 
 
 
 void PCIntIRQInt(void){
 	
 	CLEAR_BIT(MCUCR,ISC01); //any logical changes 
- 240:	e5 e5       	ldi	r30, 0x55	; 85
- 242:	f0 e0       	ldi	r31, 0x00	; 0
- 244:	80 81       	ld	r24, Z
- 246:	8d 7f       	andi	r24, 0xFD	; 253
- 248:	80 83       	st	Z, r24
+ 244:	e5 e5       	ldi	r30, 0x55	; 85
+ 246:	f0 e0       	ldi	r31, 0x00	; 0
+ 248:	80 81       	ld	r24, Z
+ 24a:	8d 7f       	andi	r24, 0xFD	; 253
+ 24c:	80 83       	st	Z, r24
 	SET_BIT(MCUCR,ISC00);
- 24a:	80 81       	ld	r24, Z
- 24c:	81 60       	ori	r24, 0x01	; 1
- 24e:	80 83       	st	Z, r24
+ 24e:	80 81       	ld	r24, Z
+ 250:	81 60       	ori	r24, 0x01	; 1
+ 252:	80 83       	st	Z, r24
 	
 	SET_BIT(PCMSK0,PCINT2); // comparator pin
- 250:	e2 e3       	ldi	r30, 0x32	; 50
- 252:	f0 e0       	ldi	r31, 0x00	; 0
- 254:	80 81       	ld	r24, Z
- 256:	84 60       	ori	r24, 0x04	; 4
- 258:	80 83       	st	Z, r24
+ 254:	e2 e3       	ldi	r30, 0x32	; 50
+ 256:	f0 e0       	ldi	r31, 0x00	; 0
+ 258:	80 81       	ld	r24, Z
+ 25a:	84 60       	ori	r24, 0x04	; 4
+ 25c:	80 83       	st	Z, r24
 	
 	SET_BIT(PCMSK1,PCINT10); //  pir pin
- 25a:	e0 e4       	ldi	r30, 0x40	; 64
- 25c:	f0 e0       	ldi	r31, 0x00	; 0
- 25e:	80 81       	ld	r24, Z
- 260:	84 60       	ori	r24, 0x04	; 4
- 262:	80 83       	st	Z, r24
+ 25e:	e0 e4       	ldi	r30, 0x40	; 64
+ 260:	f0 e0       	ldi	r31, 0x00	; 0
+ 262:	80 81       	ld	r24, Z
+ 264:	84 60       	ori	r24, 0x04	; 4
+ 266:	80 83       	st	Z, r24
 	
 	SET_BIT(GIMSK,PCIE0); // comparator pin
- 264:	eb e5       	ldi	r30, 0x5B	; 91
- 266:	f0 e0       	ldi	r31, 0x00	; 0
- 268:	80 81       	ld	r24, Z
- 26a:	80 61       	ori	r24, 0x10	; 16
- 26c:	80 83       	st	Z, r24
+ 268:	eb e5       	ldi	r30, 0x5B	; 91
+ 26a:	f0 e0       	ldi	r31, 0x00	; 0
+ 26c:	80 81       	ld	r24, Z
+ 26e:	80 61       	ori	r24, 0x10	; 16
+ 270:	80 83       	st	Z, r24
 	SET_BIT(GIMSK,PCIE1); // pir pin
- 26e:	80 81       	ld	r24, Z
- 270:	80 62       	ori	r24, 0x20	; 32
- 272:	80 83       	st	Z, r24
+ 272:	80 81       	ld	r24, Z
+ 274:	80 62       	ori	r24, 0x20	; 32
+ 276:	80 83       	st	Z, r24
 	 
 }
- 274:	08 95       	ret
+ 278:	08 95       	ret
 
-00000276 <main>:
+0000027a <main>:
 // MAIN SOFTWARE PART
 //************************************************
 
 int main(void)
 {
     GPIOInt(); 
- 276:	e4 de       	rcall	.-568    	; 0x40 <GPIOInt>
+ 27a:	e2 de       	rcall	.-572    	; 0x40 <GPIOInt>
     PCIntIRQInt();
- 278:	e3 df       	rcall	.-58     	; 0x240 <PCIntIRQInt>
+ 27c:	e3 df       	rcall	.-58     	; 0x244 <PCIntIRQInt>
 	sei();
- 27a:	78 94       	sei
+ 27e:	78 94       	sei
 	SleepInt();
- 27c:	f5 de       	rcall	.-534    	; 0x68 <SleepInt>
+ 280:	f3 de       	rcall	.-538    	; 0x68 <SleepInt>
 	
-	
+	gvar.light_enable = 0;
+ 282:	a0 e6       	ldi	r26, 0x60	; 96
+ 284:	b0 e0       	ldi	r27, 0x00	; 0
+ 286:	fd 01       	movw	r30, r26
+ 288:	11 92       	st	Z+, r1
+	gvar.one_min_counter = one_minute_const;
+ 28a:	88 eb       	ldi	r24, 0xB8	; 184
+ 28c:	9b e0       	ldi	r25, 0x0B	; 11
+ 28e:	91 83       	std	Z+1, r25	; 0x01
+ 290:	80 83       	st	Z, r24
+	gvar.min_counter = 1; 
+ 292:	13 96       	adiw	r26, 0x03	; 3
+ 294:	81 e0       	ldi	r24, 0x01	; 1
+ 296:	8c 93       	st	X, r24
 	
 	Sleep_on();
- 27e:	0f df       	rcall	.-482    	; 0x9e <Sleep_on>
- 280:	ff cf       	rjmp	.-2      	; 0x280 <main+0xa>
+ 298:	02 df       	rcall	.-508    	; 0x9e <Sleep_on>
+ 29a:	ff cf       	rjmp	.-2      	; 0x29a <main+0x20>
 
-00000282 <_exit>:
- 282:	f8 94       	cli
+0000029c <_exit>:
+ 29c:	f8 94       	cli
 
-00000284 <__stop_program>:
- 284:	ff cf       	rjmp	.-2      	; 0x284 <__stop_program>
+0000029e <__stop_program>:
+ 29e:	ff cf       	rjmp	.-2      	; 0x29e <__stop_program>
