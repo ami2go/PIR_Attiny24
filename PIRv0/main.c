@@ -38,7 +38,7 @@
 #define light  PINA3
 #define comp_in PINA2   
 
-#define one_minute 3000  // one tick is equal of 20 ms 
+#define one_minute_const 3000  // one tick is equal of 20 ms 
 
 //************************************************
 // Global variable structure
@@ -46,9 +46,10 @@
 
 typedef struct
 {
-   char light_enable;
-   unsigned int one_min_counter;
-   unsigned int min_counter;
+   uint8_t  light_enable;
+   uint16_t one_min_counter; // 3000 TIMES
+   uint8_t min_counter; 
+ 
    
 }global_var;
 
@@ -61,7 +62,7 @@ volatile global_var gvar;
 //functions prototypes 
 
 //void analogCompInt(void);
-char switch_position(void);
+uint8_t  time_selection(void);
 void GPIOInt(void);
 void SleepInt(void);
 void Sleep_on(void);
@@ -69,35 +70,24 @@ void Sleep_off(void);
 void PCIntIRQInt(void);
 //Interrupt service request part 
 
-/*ISR(ANA_COMP_vect){
-	Sleep_off();
-	if (gvar.light_enable == 1) {
-		
-		
-		
-	   if(bit_is_clear(PINA, comp_in)){
-			_delay_us(200);
-			SET_BIT(PINA,light);
-			_delay_us(700);
-			CLEAR_BIT(PINA, light);
-		}
-		
-		else {
-			
-			SET_BIT(PINA,light);
-			_delay_us(700);
-			CLEAR_BIT(PINA, light);
-		} 
-	Sleep_on();	
-	}
-	
-}*/
 
 ISR(PCINT0_vect){
 		Sleep_off();
 		if (gvar.light_enable == 1) {
 			
 			if(bit_is_clear(PINA, comp_in)){
+				
+				gvar.one_min_counter--;
+				
+				if(gvar.one_min_counter == 0){
+					
+					gvar.one_min_counter = one_minute_const;
+					gvar.min_counter--;
+					
+					if (gvar.min_counter == 0) gvar.light_enable = 0;
+					
+					}
+				
 				_delay_us(300);
 				SET_BIT(PORTA,light);
 				_delay_us(700);
@@ -113,7 +103,14 @@ ISR(PCINT0_vect){
 			Sleep_on();
 		}
 }
+
+// if pir detected any movement
 ISR(PCINT1_vect){
+	
+	Sleep_off();
+	gvar.light_enable = 1;
+	gvar.min_counter = time_selection();
+	Sleep_on();
 	
 }
 
@@ -126,18 +123,17 @@ ISR(PCINT1_vect){
 int main(void)
 {
     GPIOInt(); 
-//    analogCompInt();
     PCIntIRQInt();
 	sei();
 	SleepInt();
 	
 	
-	gvar.light_enable = 1;
+	
 	Sleep_on();
     /* Replace with your application code */
     while (1) 
     {
-	 gvar.light_enable = 1;
+	 //gvar.light_enable = 1;
    }
 }
 
@@ -176,9 +172,9 @@ void Sleep_off(void){
 	CLEAR_BIT(MCUCR,SE); 
 }
 
-char switch_position(void ){
+uint8_t time_selection(void ){
 	
-	char sw_position = 0;
+	uint8_t time = 0;
 	
 	
 	//Turn on internal pull-up resistors
@@ -190,10 +186,10 @@ char switch_position(void ){
 	_delay_us(500);
 	
 	//Reading switch
-	if(bit_is_clear(PINB, SW0B))  sw_position = 0;
-	if(bit_is_clear(PINB, SW1B))  sw_position = 1;
-	if(bit_is_clear(PINA, SW2A))  sw_position = 2;
-	if(bit_is_clear(PINA, SW3A))  sw_position = 3;
+	if(bit_is_clear(PINB, SW0B))  time = 1;
+	if(bit_is_clear(PINB, SW1B))  time = 5;
+	if(bit_is_clear(PINA, SW2A))  time = 30;
+	if(bit_is_clear(PINA, SW3A))  time = 60;
 	
 	//Turn on internal pull-up resistors
 	CLEAR_BIT(PORTA,SW2A);
@@ -201,9 +197,12 @@ char switch_position(void ){
 	CLEAR_BIT(PORTB,SW0B);
 	CLEAR_BIT(PORTB,SW1B);
 
-	return sw_position;
+	return time;
 	
 }
+
+
+
 void PCIntIRQInt(void){
 	
 	CLEAR_BIT(MCUCR,ISC01); //any logical changes 
@@ -211,26 +210,10 @@ void PCIntIRQInt(void){
 	
 	SET_BIT(PCMSK0,PCINT2); // comparator pin
 	
-//	SET_BIT(PCMSK1,PCINT10); //  pir pin
+	SET_BIT(PCMSK1,PCINT10); //  pir pin
 	
 	SET_BIT(GIMSK,PCIE0); // comparator pin
 	SET_BIT(GIMSK,PCIE1); // pir pin
 	 
 }
-/*void analogCompInt(void){
-	//initialize the analog comparator (AC)
-	//DIDR0 &= ~((1<<ADC2D) | (1<<ADC1D)); //disable digital buffer on pins AIN0 && AIN1 to reduce current consumption
-			
-	SET_BIT(DIDR0,ADC0D);
-	SET_BIT(DIDR0,ADC1D);
-	
-	CLEAR_BIT(ACSR,ACIE);//disable interrupts on AC
-	CLEAR_BIT(ACSR,ACD); //switch on analog comparator
-	SET_BIT(ACSR,ACBG);  //set Internal Voltage Reference (1V1)
-	CLEAR_BIT(ACSR,ACO); // disable output
-	CLEAR_BIT(ACSR,ACIC); // disable input capture mode
-	CLEAR_BIT(ACSR,ACIS0); //interrupt on toggle event
-	CLEAR_BIT(ACSR,ACIS1);
-	
-	SET_BIT(ACSR,ACIE);   //enable interrupts on AC
-	} */
+
