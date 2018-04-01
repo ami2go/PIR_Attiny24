@@ -11,10 +11,26 @@
 //                                         VCC  1|    |14  GND
 //[*position 1] (1min )            (D  0)  PB0  2|    |13  AREF (D 10)   (60 min)    [*position 4]
 //[*position 2] (5min)             (D  1)  PB1  3|    |12  PA1  (D  9)   (SPARE)
-//             *Reset              (D 11)  PB3  4|    |11  PA2  (D  8)   Comparator input
+//             *Reset              (D 11)  PB3  4|    |11  PA2  (D  8)   AC line sync 
 //             (pirout) PWM  INT0  (D  2)  PB2  5|    |10  PA3  (D  7)   (triac)
 //[*position 3](30 min) PWM        (D  3)  PA7  6|    |9   PA4  (D  6)            *SCK
 //             *MOSI    PWM        (D  4)  PA6  7|    |8   PA5  (D  5)        PWM *MISO
+/*
+ Positions (1,2,3,4) mean a 4 position switch where common contact is connected to gnd. 
+ Reading switch position take following action:
+ 
+    1. internal pull up resistors of all pins, which connected to switch, should be turned on
+	2. pin state should be read, 
+	3. than turned off all pull ups to save the power
+
+For the delay software is using AC line IRQ: 
+AC line syncs each 20 ms, so a simple down counter is ready.
+It is better than use Timer because it drain less power, because times is off. 
+ 
+ 
+ 
+*/
+
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
